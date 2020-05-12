@@ -40,8 +40,11 @@ try {
 		'Amount' => '100',
 	));
 
+	// Ensure trace number is unique almost to the microsecond (ish)
+	// Max 16 digits. hrtime(true) returns 17 digits, so trim least significant
+	$traceNumber = (int)substr(hrtime(true),0,-1);
+	
 	// Send the request and get response object
-	$traceNumber = time();
 	$response = $orbitalPHP->send($request, $traceNumber);
 
 	// Get some response details
