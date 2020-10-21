@@ -16,7 +16,10 @@ try {
 
 	// Create an OrbitalPHP\Client object
 	$orbitalPHP = new OrbitalPHP(
-		'ssl://orbitalvar1.paymentech.net:443', // sockethost
+		[
+			'ssl://orbitalvar1.paymentech.net:443',
+			'ssl://orbitalvar2.paymentech.net:443'
+		], // sockethost array
 		123451234512,                           // merchant id
 		function($request) {},                  // onbeforesend
 		function($request, $response) {}        // onaftersend

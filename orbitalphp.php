@@ -37,11 +37,11 @@ use OrbitalPHP\Exception as OrbitalPHPException;
 class Client
 {
 	/**
-	 * Orbital gateway endpoint, ie. ssl://orbitalvar1.paymentech.net:443.
+	 * Orbital gateway endpoints as array, ie. ssl://orbitalvar1.paymentech.net:443.
 	 * 
-	 * @var string
+	 * @var array
 	 */
-	private $_sockethost;
+	private $_sockethosts;
 
 	/**
 	 * The merchant ID of the Chase Paymentech account.
@@ -68,7 +68,7 @@ class Client
 	/**
 	 * Loads and bootstraps an OrbitalPHP\Client object.
 	 * 
-	 * @param string $sockethost Orbital gateway endpoint, 
+	 * @param array $sockethosts Orbital gateway endpoints, 
 	 *                           ie. ssl://orbitalvar1.paymentech.net:443
 	 * @param integer $merchantId The merchant ID of the Chase Paymentech 
 	 *                            account.
@@ -82,7 +82,7 @@ class Client
 	 *                             \OrbitalPHP\Response object as parameters.
 	 * @throws OrbitalPHPException
 	 */
-	public function __construct($sockethost,
+	public function __construct($sockethosts,
 	                            $merchantId,
 	                            $onBeforeSend = null,
 	                            $onAfterSend = null
@@ -95,7 +95,7 @@ class Client
 			throw new OrbitalPHPException('Invalid onAfterSend callback');
 		}
 
-		$this->_sockethost = $sockethost;
+		$this->_sockethosts = $sockethosts;
 		$this->_merchantId = $merchantId;
 		$this->_onBeforeSend = $onBeforeSend;
 		$this->_onAfterSend = $onAfterSend;
@@ -246,7 +246,11 @@ class Client
 
 		// Send the request
 		$content_length = strlen($request->getXml());
-		$fp = stream_socket_client($this->_sockethost, $errno, $errstr, 30);
+		
+		foreach($this->_sockethosts as $shost){
+			$fp = stream_socket_client($shost, $errno, $errstr, 30);
+			if ($fp) break;
+		}
 		if (!$fp) {
 			throw new OrbitalPHPException(
 				'Could not connect to Orbital, stream_socket_client failed. '
